@@ -1,0 +1,6 @@
+copy last (views.set code)
+new project 
+same app copy +url
+settings.py => rest_framework,api,
+-----------------------------------
+views.py=>
