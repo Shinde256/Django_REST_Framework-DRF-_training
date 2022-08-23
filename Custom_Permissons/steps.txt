@@ -1,0 +1,19 @@
+=================================================
+custom perimission
+------------------------
+
+same code file copy pasete
+setting.py=>
+register 
+urls.py 
+copy and paste=>
+...............
+create file custompermissions.py=>
+==================================
+
+
+
+
+
+
+
