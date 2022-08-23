@@ -1,0 +1,51 @@
+django-admin startproject <.>
+then copy api code
+and sttings.py
+installed app ='rest_framework','api'
+then copy urls.py and past=>
+===========================================
+create new file customfile=>
+from rest_framework.authentication import BaseAuthentication
+from django.contrib.auth.models import User
+from rest_framework.exceptions import AuthenticationFailed
+
+
+class CustomAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        username = request.GET.get ('username')
+        if username is None:
+            return None
+        try:
+            user = User.object.get (username=username)
+        except UserDoesnotExist
+            raise AuthenticationFailed('no such user')
+        return (user,None)
+=================================
+views.py
+-----------
+
+from .models import Student
+from .serializers import StudentSerilizers
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .customauth import CustomAuthentication
+
+
+class StudentModelViewsSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerilizers
+    authentication_classes = [CustomAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+
+
+
+
+
+
+
+
+
+
+
