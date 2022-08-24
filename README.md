@@ -9,3 +9,7 @@ Performing All the Training for Django (DRF)
 3} Custom Authetications 
 
 4} Custom Permissions
+
+5} JWT Simple Token
+
+6} Geniric Mixin 
