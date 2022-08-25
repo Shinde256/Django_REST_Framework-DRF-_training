@@ -1,0 +1,86 @@
+Fuction Based Api_view=>
+------------------
+pupose=>
+---------
+last viewspy code-we write numner of code
+normal view use kela ..
+yaha DRF not used so we use DRF
+we write less code here---
+Automatic kade jau=>
+less code best Api=>
+if you write wroung code returnign  405 code atomatic=>user
+BY default GET method accept  
+@api_view()=> default GET method
+@api_view(['GET','POST','PUT','DELETE'])=> write
+def function_name(request):===> same 
+	-----
+	----
+===================================
+Code=>
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def student_list(request):
+	if request.method=='GET':
+	 stu= Student.objects.all()
+	 serializer = StudentSerilizers(stu,many=Trur)
+	 return Response (serializer.data)
+=====>simple=>
+from rest_framework import status
+400,404,500,501,=> status code http 
+DRF CODE alag hai=>
+method=>
+--------
+GET/POST/DELETE/UPDATE
+PATCH=>. partial data update 
+-------------------------
+request=>
+------
+request.data=> parsed content of request body return karun denar
+-include file content
+-put and patch pan use kela jato
+------------------------
+request.method => return the uppercased string reprasentation of the requests HTTP method <GET<PUT<DELETE>
+------------------------
+request.query_param=>is more correctly named synonym for request.GET.
+===================================================
+RESPONSE
+------
+claint which type of request the response on that provided
+syntax
+Response(data,status=NOne ,template_name=NOne,header=none ,content type=None)
+data=> serialized data for response
+status=> response code -default 200 code
+template_name=> response ai
+-------------------------------
+browsable_api
+-------------
+api-test copy url=> paste it get request on web api
+Built in DRF trought
+api test=>postman pan asto/rest pan ahe
+==============================================
+CRUD operation=>
+write code then check=>
+setting.py=> installed_app=> rest_framework.api
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

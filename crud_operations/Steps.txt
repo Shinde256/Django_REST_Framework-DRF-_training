@@ -1,0 +1,270 @@
+CRUD operation on 
+create , read, update,delete 
+---------------
+update 
+1) partial update=> on one or two field update 
+2) complete update=> complete field update.with one command
+---------------------
+activate Django Enviroment
+>>django-admin startproject crud_operations
+then open this file
+> manage.py startapp api
+then open file pycharm
+-----------------------
+settings.py 
+------
+INSTALLED_APPS = ['reat_framework','api']
+-----------------------
+then create model 
+models.py
+----
+from django.db import models
+
+class Student(models.Model):
+    name = models.CharField(max_length=100)
+    roll = models.IntegerField()
+    city = models.CharField(max_length=100)
+---------------------------
+admin.py=> to create a table in admin interface
+from django.contrib import admin
+from .models import Student
+
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ['id','name','roll','city']
+----------------------------
+manage.py makemigrations
+manage.py migrate
+manage.py createsuperuser 
+sudhir/sudhir
+manage.py runserver
+---------------------------
+127.0.0.1:8000/admin
+enter data=>
+===========================
+crate file serializers.py
+from rest_framework import serializers
+from .models import Student
+
+class StudentSerializers(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    roll = serializers.IntegerField()
+    city = serializers.CharField(max_length=100)
+---------------------------
+create new file myapp.py for third operations
+on project level
+
+import requests
+import json
+
+URL = ""
+
+def get_data(id = None):
+    data = { }
+    if data in not None:
+        data = {'id':id}
+    json_data = json.dumps(data)
+    r = requests.get(url= URL,data= json_data)
+    data= r.json()
+    print(data)
+get_data(1)
+================================
+views.py
+----
+from django.shortcuts import render
+import io
+from rest_framework.parsers import JSONParser
+from .models import Student
+from .serializers import StudentSerializers
+from rest_framework.renderers import JSONRenderer
+from django.http import HttpResponse
+
+def student_api(request):
+    if request.method == 'GET':
+        json_data = request.body
+        stream = io.BytesIO(json_data)
+        python_data = JSONParser().parse(stream)
+        id = python_data.get("id", None)
+        if id is not None:
+            stu = Student.objects.get(id =id)
+            serializer= StudentSerializers(stu)
+            json_data = JSONRenderer().render(serializer.data)
+            return HttpResponse(json_data , content_type='application/json')
+	stu = Student.objects.all()
+        serializer = StudentSerializers(stu,many=True)
+        json_data = JSONRenderer().render(serializer.data)
+        return HttpResponse(json_data,content_type='application/json')
+
+
+============================
+urls.py
+--
+from api import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path ('studentapi/',views.student_api,name = 'student')
+]
+---------------------------
+runserver ===ok===
+myapp.py=>
+URL = ""
+
+def get_data(id = None):
+    data = { }
+    if data in not None:
+        data = {'id':id}
+    json_data = json.dumps(data)
+    r = requests.get(url= URL,data= json_data)
+    data= r.json()
+    print(data)
+get_data(o)====> all data retrireve
+WE SEE THE READ DATA FROM DATA BASE=====
+--#--#----#--#----#--#----#--#----#--#----#--#----#--#----#--#--
+NOW SEE CREATE METHOD 
+--------------
+open serializers.py file
+add last function
+
+    def create(self, validated_data):
+        return Student.objects.create(**validated_data)
+---------------------
+myapp.py
+#get_data()
+write new below
+def post_data():
+    data = {'name':'rajesh',
+            'roll':301,
+            'city':'kolkatta'}
+    json_data =json.dumps(data)
+    r = requests.post(url=URL, data=json_data)
+    data = r.json()
+    print(data)
+post_data()
+
+
+------------------------------
+views.py (post method)
+ if request.method == 'POST':
+        json_data = request.body
+        stream = io.BytesIO(json_data)
+        python_data = JSONParser().parse(stream)
+        serializers = StudentSerializers(data=python_data)
+        if serializers.is_valid():
+            serializers.save()
+            res = {'msg':' data created '}
+            json_data = JSONRenderer().render(res)
+            return HttpResponse(json_data,content_type='application/json')
+        json_data = JSONRenderer.render(serializers.errors)
+        return HttpResponse (json_data,content_type='application.jason')
+----------------------------------------
+ruen myapp.py function
+=>Error=>Forbidden (CSRF cookie not set.):
+so..
+Exmplted in views.py
+from django.views.decorators.csrf importcsrf_exempt
+@csrf_exempt
+def function
+
+-----------------------------------------
+server on => 
+myapp.py run => data created
+admin login =>check
+---------------------------------------------
+UPDATE=>
+serilizer mai update method ko emplinent karna padnga
+
+last
+    def update(self, instance, validated_data):
+        print(instance.name)=>first
+        instance.name = validated_data.get('name',instance.name)
+        print(instance.name)=>changed
+        instance.roll = validated_data.get('roll', instance.name)
+        instance.city = validated_data.get('city', instance.name)
+        instance.save()
+        return instance
+
+
+----------------------------------------
+views.py=>
+
+    if request.method == 'PUT':
+        json_data = request.body
+        steam = io.BytesIO(json_data)
+        python_data = JSONParser().parse(steam)
+        id = python_data.get('id')
+        stud = Student.objects.get(id=id)
+        serializers = StudentSerializers(stud ,data=python_data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            res = {'msg': 'Data updated !!!'}
+            json_data = JSONRenderer().render(res)
+            return HttpResponse (json_data,content_type='application.json')
+        json_data = JSONRenderer().render(serializers.errors)
+        return HttpResponse(json_data, content_type='application.json')
+
+
+
+-----------------------------------------
+myapp.py define functuon=>
+def update_data():
+    data = {'id':4,
+            'name':'radhika',
+            'roll':32,
+            'city':'bhuldhana'}
+    json_data =json.dumps(data)
+    r = requests.put(url=URL, data=json_data)
+    data = r.json()
+    print(data)
+update_data()
+run this code => data updated
+==============================================
+DELETE=>
+views.py=>
+ if request.method =="DELETE":
+        json_data = request.body
+        strame = io.BytesIO(json_data)
+        python_data = JSONParser().parse(strame)
+        id = python_data.get('id')
+        stud =  Student.objects.get(id=id)
+        stud.delete()
+        res = {'msg':'data deleted'}
+        json_data =JSONRenderer().render(res)
+        return HttpResponse(json_data,content_type='application/json')
+=============================================
+myapp.py=>
+
+def delete_data():
+    data = {'id':4}
+    json_data =json.dumps(data)
+    r = requests.delete(url=URL, data=json_data)
+    data = r.json()
+    print(data)
+delete_data()
+
+------------
+you can write class level methods
+import from django.utils.decorator import method_decorator
+from django.views import views
+
+@method_decorator(csrf_exempt,name = 'dispatch')
+class StudentAPi(views):
+	def get(self,request,*args,**kwargs):
+		--paste code
+	def POST(self,request,*args,**kwargs):
+
+same write an run=>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

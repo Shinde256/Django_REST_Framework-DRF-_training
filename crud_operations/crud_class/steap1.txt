@@ -1,0 +1,151 @@
+CRUD opearations
+------------
+Create new project_1
+settings.py installed app=> rest_framework.api
+=================================================
+models.py
+from django.db import models
+
+class Student(models.Model):
+    name = models.CharField(max_length=50)
+    roll = models.IntegerField()
+    city = models.CharField(max_length=50)
+
+-----------------------------
+admin.py
+
+from django.contrib import admin
+from .models import Student
+
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ['name','roll','city']
+---------------------------------
+manage.py makemigrations
+manage.py migrate
+manage.py createsuperuser
+---------------------------------
+login and add data 
+-------------------------------
+now using DRF views makes=>
+now make serializers.py=>
+
+from rest_framework import serializers
+from .models import Student
+
+class StudentSerilizers(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['id','name','roll','city']
+===================================================
+views.py
+-----
+from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Student
+from .serializers import StudentSerilizers
+
+@api_view(['GET','PUT','POST','DELETE'])
+def stundet_api(request):
+    if request.method == 'GET':
+        id = request.data.get('id')
+        if id is not None:
+            stu = Student.objects.get(id=id)
+            serializers = StudentSerilizers(stu)
+            return Response(serializers.data)
+        stu = Student.objects.all()
+        serializers = StudentSerilizers(stu,many=True)
+        return Response(serializers.data)
+    if request.method == 'POST':
+        serilizer = StudentSerilizers(data=request.data)
+        if serilizer.is_valid():
+            serilizer.save()
+            return Response({'msg':'data created'})
+        return Response(serilizer.errors)
+
+    if request.method == 'PUT':
+        id = request.data.get('id')
+        stu = Student.objects.get(pk = id)
+        serializers =StudentSerilizers(stu,data=request.data , partial = True)
+        if serializers.is_valid():
+            serializers.save()
+            return Response({'msg':'data updated'})
+        return Response(serializers.errors)
+
+    if request.method == 'DELETE':
+        id = request.data.get ('id')
+        stu = Student.objects.get(pk=id)
+        stu.delete()
+        return Response({'msg':'data Deleted'})
+
+----------------------------------------------
+urls.py=>
+from django.contrib import admin
+from django.urls import path
+from api import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('studentapi/',views.stundet_api)
+]
+=================================================
+myapp.py => run third party run
+
+import requests
+import json
+
+URL = "http://127.0.0.1:8000/studentapi/"
+
+def get_data(id = None):
+    data = {}
+    if data is not None:
+        data = {'id': id}
+    json_data = json.dumps(data)
+    headers = {'content-type':'application/json'}
+    r = requests.get(url= URL,headers=headers ,data= json_data)
+    data= r.json()
+    print(data)
+#get_data()
+
+def post_data():
+    data = {'name':'supriya',
+            'roll':302,
+            'city':'kalyan'}
+    json_data =json.dumps(data)
+    r = requests.post(url=URL, data=json_data)
+    data = r.json()
+    print(data)
+#post_data()
+
+def update_data():
+    data = {'id':2,
+            'name':'shruti',
+            'roll':32,
+            'city':'terkhada'}
+    json_data =json.dumps(data)
+    headers = {'content-type':'application/json'}
+    r = requests.put(url=URL,headers=headers , data=json_data)
+    data = r.json()
+    print(data)
+#update_data()
+
+
+def delete_data():
+    data = {'id':2}
+    json_data =json.dumps(data)
+    headers = {'content-type':'application/json'}
+    r = requests.delete(url=URL, headers=headers ,data=json_data)
+    data = r.json()
+    print(data)
+delete_data()
+
+
+=====================================================
+
+      
+
+
+
+
+
