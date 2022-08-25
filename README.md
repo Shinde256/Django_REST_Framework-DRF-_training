@@ -13,3 +13,6 @@ Performing All the Training for Django (DRF)
 5} JWT Simple Token
 
 6} Geniric Mixin 
+
+7} CRUD Operations
+
