@@ -17,3 +17,7 @@ Performing All the Training for Django (DRF)
 7} CRUD Operations
 
 8} Paginations
+
+9} Search Filter
+
+10} Session Authentication
