@@ -1,0 +1,26 @@
+session Authentications & permissions
+=====================================
+
+views.py
+===========
+from .models import Student
+from .serializers import StudentSerilizers
+from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
+
+
+class StudentModelViewsSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Student.objects.all()
+    serializer_class = StudentSerilizers
+
+==============================================
+no give login and passwords acess=>
+so u registerd urls.py mai register 
+path('auth/',include('rest_framework.urls')
+=================================================
+custom perimission
+------------------------
+
