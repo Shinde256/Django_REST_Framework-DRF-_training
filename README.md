@@ -21,3 +21,5 @@ Performing All the Training for Django (DRF)
 9} Search Filter
 
 10} Session Authentication
+
+11} Model ViewSet
