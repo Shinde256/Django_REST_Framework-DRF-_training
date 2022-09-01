@@ -1,0 +1,92 @@
+Modelviewset=>
+crate new project=>
+django-admin startproject <>
+then open manage.py 
+manage.py startapp <>
+
+settings.py=> register apps
+<rest_framework.api>
+--------------------------------------------
+then models.py
+from django.db import models
+
+class Student(models.Model):
+    name = models.CharField(max_length=100)
+    roll = models.IntegerField()
+    city =models.CharField(max_length=100)
+
+=============================================
+admin.py
+
+from django.contrib import admin
+from .models import Student
+
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ['id','name','roll','city']
+
+===============================================
+manage.py makemigarations
+manage.py migrate
+manage.py createsuperuser
+==============================================
+create file serializers.py 
+--------------------
+from rest_framework import serializers
+from .models import Student
+
+
+class StudentSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields=['id','name','roll','city']
+---------------------------------------------
+urls.py
+
+from django.contrib import admin
+from django.urls import path,include
+from api import views
+from rest_framework.routers import DefaultRouter
+
+# creating router object
+router = DefaultRouter()
+
+#register Studentviewset with Router
+router.register('studentapi',views.StudentModelViewsSet,basename='student')
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',include(router.urls))
+]
+
+
+----------------------------------------------
+views.py
+from .models import Student
+from .serializers import StudentSerilizers
+from rest_framework import viewsets
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
+class StudentModelViewsSet(viewsets.ModelViewSet):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Student.objects.all()
+    serializer_class = StudentSerilizers
+
+-----------------------
+you can define globally=> settings .py
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication']}
+---------------------------------
+
+
+
+
+
+
+
+
+
+
